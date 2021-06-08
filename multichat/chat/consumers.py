@@ -39,6 +39,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         """
         # Messages will have a "command" key we can switch on
         command = content.get("command", None)
+        print('content本体内容', content)
+        print(f'接收指令：{command}')
         try:
             if command == "join":
                 # Make them join the room
@@ -131,6 +133,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             raise ClientError("ROOM_ACCESS_DENIED")
         # Get the room and send to the group about it
         room = await get_room_or_error(room_id, self.scope["user"])
+        print('room:', room, 'message:', message)
         await self.channel_layer.group_send(
             room.group_name,
             {
@@ -148,6 +151,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         """
         Called when someone has joined our chat.
         """
+        print('come in chat_join')
         # Send a message down to the client
         await self.send_json(
             {
@@ -162,6 +166,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         Called when someone has left our chat.
         """
         # Send a message down to the client
+        print('come in chat_leave')
         await self.send_json(
             {
                 "msg_type": settings.MSG_TYPE_LEAVE,
@@ -174,6 +179,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         """
         Called when someone has messaged our chat.
         """
+        print('come in chat_message')
         # Send a message down to the client
         await self.send_json(
             {
